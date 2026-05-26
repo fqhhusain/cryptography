@@ -1,0 +1,30 @@
+from Crypto.Util.number import long_to_bytes
+
+def hastad(ciphertexts, moduli, e=3):
+    if not (len(moduli) == len(ciphertexts) == e):
+        raise RuntimeError("Moduli and ciphertext arrays have to be equal in length, and contain at least as many elements as e")
+    M = crt(ciphertexts, moduli).nth_root(e)
+    return M
+
+# Parse output.txt
+with open("output.txt") as f:
+    data = f.read()
+
+blocks = [b.strip() for b in data.strip().split("\n\n") if b.strip()]
+
+e = None
+Ns = []
+Cs = []
+
+for block in blocks:
+    for line in block.splitlines():
+        key, val = line.split(" = ")
+        if key.strip() == "e":
+            e = int(val)
+        elif key.strip() == "N":
+            Ns.append(Integer(val))
+        elif key.strip() == "C":
+            Cs.append(Integer(val))
+
+m = hastad(Cs, Ns, e)
+print(long_to_bytes(int(m)))
